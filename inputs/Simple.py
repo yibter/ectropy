@@ -24,14 +24,30 @@ class Simple:
 		}
 		
 		tasks = {
-			1: Task(1, 'Change Oil', 1, 5, 10, [
+			1: Task(
+				id=1, 
+				name='Change Oil', 
+				unit=1, 
+				threshold=5, 
+				interval=10, 
+				manpowers=[
 					Manpower(1, skills[1], 1), 
 					Manpower(2, skills[2], 4), 
 					Manpower(3, skills[2], 2)
-				], [2]),
-			2: Task(2, 'Paint', 1, 5, 20, [
+				], 
+				conflicts=[2]
+			),
+			2: Task(
+				id=2, 
+				name='Paint', 
+				unit=1, 
+				threshold=5, 
+				interval=20, 
+				manpowers=[
 					Manpower(4, skills[3], 20)
-				], [1])
+				], 
+				conflicts=[1]
+			)
 		}
 		
 		

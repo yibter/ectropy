@@ -19,7 +19,7 @@ class Task:
         return max(self.addDays(date, self.interval), self.addDays(asset.start, self.threshold))
         # without rebasing it would be: return self.addDays(date, self.interval) 
 
-         
+    #calculate end date based on start date plus number of days task takes 
     def end(self, start):
         return self.addDays(start, self.days)
          
@@ -44,11 +44,8 @@ class Task:
             self.sumSkills(manpower)
             self.manhours += manpower.hours
             self.totalAvailableHours += manpower.skill.availableHours
-               
-
+        #calculate a task weight based on size and availability
         self.relativeWeight = self.manhours / (self.totalAvailableHours *1.0)
-            
-            
     
     def sumSkills(self, manpower):
         newSkill = manpower.skill.copy()
