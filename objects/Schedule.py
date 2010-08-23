@@ -1,76 +1,64 @@
 class Schedule:
-    def __init__(self, dataSource, dateRange, maxAssetsInWork):
-        self.dataSource = dataSource
+    def __init__(self, dateRange, maxAssetsInWork):
         self.dateRange = dateRange
         self.maxAssetsInWork = maxAssetsInWork
-        self._schedule = {}     #assets >> tasks
-        self._assetsInWork = {} #date >> assets
-        self._skillsInWork = {} #date >> skills
-        self._scheduledTasks = {} #assets >> date >> tasks
-        self.totalManhours = 0
+        self._schedule = {}     #dateRange >> assets >> tasks
 
     def force(self, asset, task, dateRange):
         self._addToSchedule(asset, task.forceSchedule(dateRange))
+
+    def blocked(self, asset, task, date):
+        _task = task.schedule(date) #Create scheduled task (prevent threading issues)
+        if(self._assetAvailabilityFilled(_task.dateRange, asset)): return True
+        if(self._skillAvailabilityFilled(_task)): return True
+        return False
 
     def add(self, asset, task, date):
         _task = task.schedule(date) #Create scheduled task
         self._addToSchedule(asset, _task)
         return _task.dateRange.end
 
-    def blocked(self, asset, task, date):
-        _task = task.schedule(date) #Create scheduled task (prevent threading issues)
-        for date in _task.dateRange.range():
-            if  date in self._assetsInWork.keys() and \
-                len(set(self._assetsInWork[date]).difference([asset.id])) >= self.maxAssetsInWork:
-                #difference: if Asset XYZ is already in set, then take it out before making this logic (in other words, if already scheduled in that day you can schedule additional tasks for that asset on that day
-                #LHS is the number of assets *already* scheduled, so if >= maxAssets cannot schedule any additional assets
-                return True
-            for skill in task.skills:
-                if  date in self._skillsInWork.keys() and \
-                    skill.id in self._skillsInWork[date].keys() and \
-                    self._skillsInWork[date][skill.id] + skill.hoursPerDay > skill.availableHours:
-                    #print task.id, self._skillsInWork[date][skill.id], skill.hoursPerDay, skill.availableHours
-                    return True
-            for conflict in task.conflicts:
-                if  asset.id in self._scheduledTasks.keys() and \
-                    date in self._scheduledTasks[asset.id].keys() and \
-                    conflict in self._scheduledTasks[asset.id][date]:
-                    return True
-        return False
-
     def last(self, asset, task):
-        if asset.id in self._schedule.keys():
-            for _task in self._schedule[asset.id]:
-                if _task.id == task.id:
-                    return _task.dateRange.end
+        for _task in self._schedule[asset.id]:
+            if _task.id == task.id:
+                return _task.dateRange.end
     
     def _addToSchedule(self, asset, task):
         if asset.id not in self._schedule: 
             self._schedule[asset.id] = []
         self._schedule[asset.id].append(task)
-        
-        for date in task.dateRange.range():
-            
-            if date not in self._assetsInWork.keys(): 
-                self._assetsInWork[date] = [asset.id]
-            elif asset.id not in self._assetsInWork[date]: 
-                self._assetsInWork[date].append(asset.id)
-                
-            for skill in task.skills:
-                if date not in self._skillsInWork.keys(): 
-                    self._skillsInWork[date] = { skill.id:skill.hoursPerDay }
-                elif skill.id not in self._skillsInWork[date].keys():
-                    self._skillsInWork[date][skill.id] = skill.hoursPerDay
-                else:
-                    self._skillsInWork[date][skill.id] += skill.hoursPerDay
-                    
-            if asset.id not in self._scheduledTasks.keys(): 
-                self._scheduledTasks[asset.id] = { date: [task.id] }
-            elif date not in self._scheduledTasks[asset.id]: 
-                self._scheduledTasks[asset.id][date] = [task.id]
-            else:
-                self._scheduledTasks[asset.id][date].append(task.id)
-                
-        self.totalManhours += task.manhours
-        
     
+    def _assetAvailabilityFilled(self, dateRange, asset):
+        for assetIdParent in self._schedule.keys(): #Loop scheduled assets
+            if assetIdParent <> asset.id: #Ignore if the asset is the one being scheduled on
+                for taskParent in self._schedule[assetIdParent]: #Loop asset tasks
+                    if taskParent.dateRange in dateRange: #If tasks overlap
+                        usedAssets = [assetIdParent] #Add/Reset used asset
+                        if len(usedAssets) >= self.maxAssetsInWork: return True #If assets filled, return
+                        for assetIdChild in self._schedule.keys(): #Find other assets
+                            if assetIdChild <> asset.id and assetIdChild <> assetIdParent: #Ignore same & scheduled assets
+                                for taskChild in self._schedule[assetIdChild]: #Get asset tasks
+                                    if taskChild.dateRange in taskParent.dateRange: #If task overlap
+                                        usedAssets.append(assetIdChild) #Add used asset
+                                        if len(usedAssets) >= self.maxAssetsInWork: return True #If assets filled, return
+                                        break #Stop looking at tasks for this child asset
+        return False
+    
+    def _skillAvailabilityFilled(self, task):
+        for skill in task.skills: #Loop task skills
+            for assetIdParent in self._schedule.keys(): #Loop scheduled assets
+                for taskParent in self._schedule[assetIdParent]: #Loop asset tasks
+                    if taskParent.dateRange in task.dateRange: #Select overlapping tasks
+                        for skillParent in taskParent.skills: #Loop skills
+                            if skillParent.id == skill.id: #If same skill
+                                usedSkills = skill.total + skillParent.total #Add/Reset used skills
+                                if usedSkills > skill.available: return True #If no room, return
+                                for assetIdChild in self._schedule.keys(): #Find other assets
+                                    for taskChild in self._schedule[assetIdChild]: #Get asset tasks
+                                        if taskChild.dateRange in taskParent.dateRange: #If task overlap
+                                            if assetIdChild <> assetIdParent or taskParent.id <> taskChild.id: #If not same asset task
+                                                for skillChild in taskChild.skills: #Loop skills
+                                                    if skillChild.id == skillParent.id: #If same skill
+                                                        usedSkills += skillChild.total #Add used skills
+                                                        if usedSkills > skill.available: return True #If no room, return
+        return False
