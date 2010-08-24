@@ -1,20 +1,21 @@
 class Task:
-    def __init__(self, id, name, unit, threshold, interval, manpowers, conflicts):
+    def __init__(self, id, name, unit, threshold, interval, manpowers, tasks, maximums, dateRange):
         self.id = id
         self.name = name
         self.unit = unit
         self.threshold = threshold
         self.interval = interval
         self.manpowers = manpowers
-        self.conflicts = conflicts
+        self.tasks = tasks
+        self.maximums = maximums
+        self.dateRange = dateRange
         self.locked = False
-        self.hoursPerDay = 8
+        self.hoursPerDay = 8 #TODO: Don't hard-code
         if len(manpowers): self.precal() #TODO: Should come from sequencing
         
     def next(self, asset, date):
         #TODO: Add usage units
         #TODO: Add task start/end
-        #TODO: Add schedule start/end/active
         if date == None: return self.addDays(asset.start, self.threshold)
         return max(self.addDays(date, self.interval), self.addDays(asset.start, self.threshold))
         # without rebasing it would be: return self.addDays(date, self.interval) 
@@ -23,7 +24,7 @@ class Task:
     def end(self, start):
         return self.addDays(start, self.days)
          
-    def dateRange(self, date):
+    def calcDateRange(self, date):
         from objects.DateRange import DateRange
         self.dateRange = DateRange(date, self.end(date))
     
@@ -45,7 +46,7 @@ class Task:
             self.manhours += manpower.hours
             self.totalAvailableHours += manpower.skill.availableHours
         #calculate a task weight based on size and availability
-        self.relativeWeight = self.manhours / (self.totalAvailableHours *1.0)
+        self.relativeWeight = self.manhours / (self.totalAvailableHours *1.0) #TODO: Don't hard-code
     
     def sumSkills(self, manpower):
         newSkill = manpower.skill.copy()
@@ -62,7 +63,7 @@ class Task:
     
     def schedule(self, date):
         _task = self.copy()
-        _task.dateRange(date) #Calculate/set date range
+        _task.calcDateRange(date) #Calculate/set date range
         return _task
     
     def forceSchedule(self, dateRange):

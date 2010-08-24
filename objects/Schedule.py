@@ -31,7 +31,7 @@ class Schedule:
                     self._skillsInWork[date][skill.id] + skill.hoursPerDay > skill.availableHours:
                     #print task.id, self._skillsInWork[date][skill.id], skill.hoursPerDay, skill.availableHours
                     return True
-            for conflict in task.conflicts:
+            for conflict in task.tasks["conflict"]:
                 if  asset.id in self._scheduledTasks.keys() and \
                     date in self._scheduledTasks[asset.id].keys() and \
                     conflict in self._scheduledTasks[asset.id][date]:

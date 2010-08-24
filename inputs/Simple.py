@@ -7,7 +7,7 @@ class Simple:
 		from objects.Task import Task
 		from objects.DateRange import DateRange
 		
-		self.name = "Simple"
+		self.name = 'Simple'
 		
 		schedule = Schedule(self.name, DateRange(date(2010, 1, 1), date(2010, 2, 1)), 2)
 		
@@ -35,7 +35,9 @@ class Simple:
 					Manpower(2, skills[2], 4), 
 					Manpower(3, skills[2], 2)
 				], 
-				conflicts=[2]
+				tasks={ 'pre':[], 'concurrent':[], 'post':[], 'conflict':[2] },
+				maximums=[],
+				dateRange=DateRange(date(2010, 1, 2), None).intersection(schedule.dateRange)
 			),
 			2: Task(
 				id=2, 
@@ -46,7 +48,35 @@ class Simple:
 				manpowers=[
 					Manpower(4, skills[3], 20)
 				], 
-				conflicts=[1]
+				tasks={ 'pre':[], 'concurrent':[], 'post':[], 'conflict':[1] },
+				maximums=[{ 'type':'FY', 'max':1, 'key':2010, 'value':0 }],
+				dateRange=DateRange(None, None).intersection(schedule.dateRange)
+			),
+			3: Task(
+				id=3, 
+				name='Rotate Tires', 
+				unit=1, 
+				threshold=5, 
+				interval=20, 
+				manpowers=[
+					Manpower(5, skills[2], 4)
+				], 
+				tasks={ 'pre':[], 'concurrent':[1], 'post':[], 'conflict':[2] },
+				maximums=[],
+				dateRange=DateRange(None, None).intersection(schedule.dateRange)
+			),
+			4: Task(
+				id=4, 
+				name='Check Tires', 
+				unit=None, 
+				threshold=None, 
+				interval=None, 
+				manpowers=[
+					Manpower(6, skills[2], 1)
+				], 
+				tasks={ 'pre':[], 'concurrent':[], 'post':[], 'conflict':[2] },
+				maximums=[],
+				dateRange=DateRange(None, None).intersection(schedule.dateRange)
 			)
 		}
 		
