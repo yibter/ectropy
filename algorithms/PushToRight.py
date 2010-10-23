@@ -3,15 +3,8 @@ class PushToRight:
 
         from datetime import timedelta
         
-        #for task in input.tasks:
-        #    print task.resourcePercent, task.id
+        input.tasks.sort(key=lambda task: task.relativeWeight)
         
-        
-        #sorted(input.tasks, key=lambda task: task.relativeWeight)
-
-        #for task in input.tasks:
-        #    print task.resourcePercent, task.id
-
         conflicts = 0
         
         for asset in input.assets:
