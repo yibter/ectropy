@@ -3,8 +3,8 @@ class PushToRight:
 
         from datetime import timedelta
         
-        input.tasks.sort(key=lambda task: task.relativeWeight)
-        
+        input.tasks.sort(key=lambda task: task.relativeWeight, reverse=True)
+
         conflicts = 0
         
         for asset in input.assets:
