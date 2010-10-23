@@ -3,9 +3,6 @@ class DateRange:
         self.start = start
         self.end = end
     
-    def __contains__(self, dateRange): 
-        return  (self.start <= dateRange.end) and (self.end >= dateRange.start)
-    
     def range(self):
         from datetime import timedelta
         date = self.start
