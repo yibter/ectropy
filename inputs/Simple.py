@@ -1,7 +1,7 @@
 class Simple:
 	def __init__(self):
 		
-		from datetime import date
+		from datetime import datetime
 		from objects import Asset, Skill, Manpower
 		from objects.Schedule import Schedule
 		from objects.Task import Task
@@ -9,12 +9,12 @@ class Simple:
 		
 		self.name = "Simple"
 		
-		schedule = Schedule(self.name, DateRange(date(2010, 1, 1), date(2010, 2, 1)), 2)
+		schedule = Schedule(self.name, DateRange(datetime(2010, 1, 1), datetime(2010, 2, 1)), 2)
 		
 		assets = {
-			1: Asset(1, 'Airplane', date(2010, 1, 1)),
-			2: Asset(2, 'Tank', date(2010, 1, 1)),
-			3: Asset(3, 'Truck', date(2010, 1, 1))
+			1: Asset(1, 'Airplane', datetime(2010, 1, 1)),
+			2: Asset(2, 'Tank', datetime(2010, 1, 1)),
+			3: Asset(3, 'Truck', datetime(2010, 1, 1))
 		}
 		
 		skills = {
@@ -51,12 +51,12 @@ class Simple:
 		}
 		
 		
-		#schedule.force(assets[1], tasks[1], DateRange(date(2010, 1, 1), date(2010, 1, 1)))
-		schedule.force(assets[1], tasks[2], DateRange(date(2010, 1, 1), date(2010, 1, 1)))
-		schedule.force(assets[2], tasks[1], DateRange(date(2010, 1, 1), date(2010, 1, 1)))
-		schedule.force(assets[2], tasks[2], DateRange(date(2010, 1, 1), date(2010, 1, 1)))
-		schedule.force(assets[3], tasks[1], DateRange(date(2010, 1, 1), date(2010, 1, 1)))
-		schedule.force(assets[3], tasks[2], DateRange(date(2010, 1, 1), date(2010, 1, 1)))
+		#schedule.force(assets[1], tasks[1], DateRange(datetime(2010, 1, 1), datetime(2010, 1, 1)))
+		schedule.force(assets[1], tasks[2], DateRange(datetime(2010, 1, 1), datetime(2010, 1, 1)))
+		schedule.force(assets[2], tasks[1], DateRange(datetime(2010, 1, 1), datetime(2010, 1, 1)))
+		schedule.force(assets[2], tasks[2], DateRange(datetime(2010, 1, 1), datetime(2010, 1, 1)))
+		schedule.force(assets[3], tasks[1], DateRange(datetime(2010, 1, 1), datetime(2010, 1, 1)))
+		schedule.force(assets[3], tasks[2], DateRange(datetime(2010, 1, 1), datetime(2010, 1, 1)))
 		
 
 		self.assets = assets.values()
