@@ -11,6 +11,11 @@ class Task:
         self.dateRange = dateRange
         self.locked = False
         self.hoursPerDay = 8 #TODO: Don't hard-code
+        self.relativeWeight = 0 #init value
+        self.skills = [] #init value
+        self.days = 0 #init value
+        self.manhours = 0 #init value
+        self.totalAvailableHours = 0 #init value
         if len(manpowers): self.precal() #TODO: Should come from sequencing
         
     def next(self, asset, date):
@@ -31,15 +36,10 @@ class Task:
     def addDays(self, date, days):
         from datetime import timedelta
         days -= 1
-        return date + timedelta(days=days)
+        return date + timedelta(days=round(days)) #todo: decrement precision if decimal
     
     def precal(self):
         import math
-        self.days = 0
-        self.manhours = 0
-        self.relativeWeight = 0
-        self.skills = []
-        self.totalAvailableHours = 0
         for manpower in self.manpowers:
             self.days = math.ceil(max(self.days, manpower.hours / (manpower.skill.hoursPerDay *1.0))) #TODO: Don't hard-code
             self.sumSkills(manpower)

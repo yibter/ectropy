@@ -1,6 +1,6 @@
 class Costas:
 	def __init__(self):
-		from datetime import date
+		from datetime import datetime
 		from objects import Asset, Skill, Manpower
 		from objects.Schedule import Schedule
 		from objects.Task import Task
@@ -8,10 +8,10 @@ class Costas:
 		
 		self.name = 'Costas'
 		
-		schedule = Schedule(self.name, DateRange(date(2010, 1, 1), date(2011, 1, 1)), 2)
+		schedule = Schedule(self.name, DateRange(datetime(2010, 1, 1), datetime(2011, 1, 1)), 2)
 		
 		assets = {
-			1: Asset(1, 'Asset 1', date(2010, 1, 1))
+			1: Asset(1, 'Asset 1', datetime(2010, 1, 1))
 		}
 		
 		skills = {
