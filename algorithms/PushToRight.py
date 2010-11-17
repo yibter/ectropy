@@ -11,21 +11,25 @@ class PushToRight:
         
             for task in input.tasks:
                 
-                start = task.next(asset, input.schedule.last(asset, task))
+                if(task.interval):
                 
-                while(start <= input.schedule.dateRange.end):
+                    start = task.next(asset, input.schedule.last(asset, task))
                     
-                    while(input.schedule.blocked(asset, task, start)): 
+                    start = max(start, input.schedule.dateRange.start)
                     
-                        start += timedelta(days=1) #Shift to the right one day when blocked
+                    while(start <= input.schedule.dateRange.end):
                         
-                        conflicts += 1
+                        while(input.schedule.blocked(asset, task, start)): 
                         
-                    end = input.schedule.add(asset, task, start)
-                
-                    #print asset.name, task.name, start, end
+                            start += timedelta(days=1) #Shift to the right one day when blocked
+                            
+                            conflicts += 1
+                            
+                        end = input.schedule.add(asset, task, start)
                     
-                    start = task.next(asset, end)
+                        #print asset.name, task.name, start, end
+                        
+                        start = task.next(asset, end)
                     
         print "PushToRight", input.schedule.dataSource, "Manhours:", input.schedule.totalManhours, " Counts:", conflicts
                     

@@ -31,6 +31,7 @@ class QueryDB:
         for r in cursor.execute("SELECT id, name, available, 8 hoursPerDay FROM Skill WHERE platformId = ?", _platform):
             skills[r.id] = Skill(r.id, r.name, r.available, r.hoursPerDay)
             
+        #TODO: Only show conflicts with tasks in query
         tasks = {}
         for r in cursor.execute("""
             SELECT    t.id, 

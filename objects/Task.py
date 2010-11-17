@@ -6,7 +6,7 @@ class Task:
         self.threshold = threshold
         self.interval = interval
         self.manpowers = manpowers
-        self.conflicts = conflicts
+        self.conflicts = [] #conflicts
         self.locked = False
         self.hoursPerDay = 8
         self.relativeWeight = 0 #init value
@@ -34,13 +34,14 @@ class Task:
     
     def addDays(self, date, days):
         from datetime import timedelta
+        from math import floor
         days -= 1
-        return date + timedelta(days=round(days)) #todo: decrement precision if decimal
+        return date + timedelta(days=floor(days)) #todo: decrement precision if decimal
     
     def precal(self):
-        import math
+        from math import ceil
         for manpower in self.manpowers:
-            self.days = math.ceil(max(self.days, manpower.hours / (manpower.skill.hoursPerDay *1.0))) #TODO: Don't hard-code
+            self.days = ceil(max(self.days, manpower.hours / (manpower.skill.hoursPerDay *1.0))) #TODO: Don't hard-code
             self.sumSkills(manpower)
             self.manhours += manpower.hours
             self.totalAvailableHours += manpower.skill.availableHours
