@@ -49,7 +49,7 @@ class Task:
             self.totalAvailableHours += manpower.skill.availableHours
         #calculate a task weight based on size and availability
         self.relativeWeight = self.manhours / (self.totalAvailableHours *1.0)
-        #self.relativeWeight *= len(self.conflicts)+1
+        self.relativeWeight *= len(self.conflicts)+1
     
     def sumSkills(self, manpower):
         newSkill = manpower.skill.copy()
