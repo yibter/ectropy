@@ -35,7 +35,7 @@ class Schedule:
 
             if  asset.id in self._conflictTasks.keys() and \
                 date in self._conflictTasks[asset.id].keys() and \
-                (0 in self._conflictTasks[asset.id][date] or task.id in self._conflictTasks[asset.id][date]):
+                task.id in self._conflictTasks[asset.id][date]:
                 return True           
             
         return False
@@ -74,12 +74,12 @@ class Schedule:
             else:
                 self._scheduledTasks[asset.id][date].append(task.id)
  
-            if asset.id not in self._conflictTasks.keys(): 
-                self._conflictTasks[asset.id] = { date: task.conflicts }
-            elif date not in self._conflictTasks[asset.id]: 
-                self._conflictTasks[asset.id][date] = task.conflicts
-            else:
-                self._conflictTasks[asset.id][date] = self._conflictTasks[asset.id][date].union(task.conflicts)
+            #if asset.id not in self._conflictTasks.keys(): 
+            #    self._conflictTasks[asset.id] = { date: task.conflicts }
+            #elif date not in self._conflictTasks[asset.id]: 
+            #    self._conflictTasks[asset.id][date] = task.conflicts
+            #else:
+            #    self._conflictTasks[asset.id][date] = self._conflictTasks[asset.id][date].union(task.conflicts)
 
                 
         self.totalManhours += task.manhours
