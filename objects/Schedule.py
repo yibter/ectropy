@@ -7,6 +7,7 @@ class Schedule:
         self._assetsInWork = {} #date >> assets
         self._skillsInWork = {} #date >> skills
         self._scheduledTasks = {} #assets >> date >> tasks
+        self._conflictTasks = {} #assets >> date >> conflicts
         self.totalManhours = 0
 
     def force(self, asset, task, dateRange):
@@ -31,11 +32,12 @@ class Schedule:
                     self._skillsInWork[date][skill.id] + skill.hoursPerDay > skill.availableHours:
                     #print task.id, self._skillsInWork[date][skill.id], skill.hoursPerDay, skill.availableHours
                     return True
-            for conflict in task.conflicts:
-                if  asset.id in self._scheduledTasks.keys() and \
-                    date in self._scheduledTasks[asset.id].keys() and \
-                    conflict in self._scheduledTasks[asset.id][date]:
-                    return True
+
+            if  asset.id in self._conflictTasks.keys() and \
+                date in self._conflictTasks[asset.id].keys() and \
+                (0 in self._conflictTasks[asset.id][date] or task.id in self._conflictTasks[asset.id][date]):
+                return True           
+            
         return False
 
     def last(self, asset, task):
@@ -45,6 +47,7 @@ class Schedule:
                     return _task.dateRange.end
     
     def _addToSchedule(self, asset, task):
+        
         if asset.id not in self._schedule: 
             self._schedule[asset.id] = []
         self._schedule[asset.id].append(task)
@@ -70,6 +73,14 @@ class Schedule:
                 self._scheduledTasks[asset.id][date] = [task.id]
             else:
                 self._scheduledTasks[asset.id][date].append(task.id)
+ 
+            if asset.id not in self._conflictTasks.keys(): 
+                self._conflictTasks[asset.id] = { date: task.conflicts }
+            elif date not in self._conflictTasks[asset.id]: 
+                self._conflictTasks[asset.id][date] = task.conflicts
+            else:
+                self._conflictTasks[asset.id][date] = self._conflictTasks[asset.id][date].union(task.conflicts)
+
                 
         self.totalManhours += task.manhours
         

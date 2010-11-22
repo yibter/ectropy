@@ -1,12 +1,14 @@
 class Task:
     def __init__(self, id, name, unit, threshold, interval, manpowers, conflicts):
+        from sets import Set
+        
         self.id = id
         self.name = name
         self.unit = unit
         self.threshold = threshold
         self.interval = interval
         self.manpowers = manpowers
-        self.conflicts = [] #conflicts
+        self.conflicts = Set(conflicts)
         self.locked = False
         self.hoursPerDay = 8
         self.relativeWeight = 0 #init value
