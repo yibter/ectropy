@@ -1,5 +1,5 @@
 class Task:
-    def __init__(self, id, name, unit, threshold, interval, manpowers, conflicts):
+    def __init__(self, id, name, unit, threshold, interval, manpowers, conflicts, totalTasks):
         from sets import Set
         
         self.id = id
@@ -15,7 +15,8 @@ class Task:
         self.skills = [] #init value
         self.days = 0 #init value
         self.manhours = 0 #init value
-        self.totalAvailableHours = 0 #init value        
+        self.totalAvailableHours = 0 #init value  
+        self.totalTasks = totalTasks
         if len(manpowers): self.precal() #TODO: Should come from sequencing
         
     def next(self, asset, date):
@@ -49,7 +50,7 @@ class Task:
             self.totalAvailableHours += manpower.skill.availableHours
         #calculate a task weight based on size and availability
         self.relativeWeight = self.manhours / (self.totalAvailableHours *1.0)
-        self.relativeWeight *= len(self.conflicts)+1
+        self.relativeWeight += len(self.conflicts)/self.totalTasks
     
     def sumSkills(self, manpower):
         newSkill = manpower.skill.copy()
