@@ -3,7 +3,14 @@ class PushToRight:
 
         from datetime import timedelta
         
-        input.tasks.sort(key=lambda task: task.relativeWeight, reverse=True)
+        weight = 1.0 #0<=weight<=1
+        totalTasks = len(input.tasks)
+        input.tasks.sort(key=lambda task: 
+            (     
+                (weight * ((task.manhours / (task.totalAvailableHours *1.0)) if task.totalAvailableHours else 0)) 
+                + ((1-weight) * (len(task.conflicts) / (totalTasks *1.0)))
+             ), 
+            reverse=True)
 
         conflicts = 0
         
